@@ -76,13 +76,13 @@ class Training:
 
 @dataclass
 class Running(Training):
-    coeff_calor1: int = 18
-    coeff_calor2: int = 20
+    COEFF_CALOR1: int = 18
+    COEFF_CALOR2: int = 20
 
     def get_spent_calories(self) -> float:
         speed = self.get_mean_speed()
         duration_m = self.hour_in_min()
-        calories = ((self.coeff_calor1 * speed - self.coeff_calor2)
+        calories = ((self.COEFF_CALOR1 * speed - self.COEFF_CALOR2)
                     * self.weight / self.M_IN_KM * duration_m)
         return calories
 
@@ -91,15 +91,15 @@ class Running(Training):
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
     height: float
-    coeff_calor1: float = 0.035
-    coeff_calor2: float = 0.029
+    COEFF_CALOR1: float = 0.035
+    COEFF_CALOR2: float = 0.029
 
     def get_spent_calories(self) -> float:
         speed = self.get_mean_speed()
         duration_m = self.hour_in_min()
-        calories = ((self.coeff_calor1 * self.weight
+        calories = ((self.COEFF_CALOR1 * self.weight
                     + (speed ** 2 // self.height)
-                    * self.coeff_calor2 * self.weight) * duration_m)
+                    * self.COEFF_CALOR2 * self.weight) * duration_m)
         return calories
 
 
@@ -109,7 +109,7 @@ class Swimming(Training):
     length_pool: float
     count_pool: int
     LEN_STEP: ClassVar[float] = 1.38
-    value1: float = 1.1
+    VALUE1: float = 1.1
 
     def get_mean_speed(self) -> float:
         speed = (self.length_pool
@@ -118,7 +118,7 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         speed = self.get_mean_speed()
-        calories = (speed + self.value1) * 2 * self.weight
+        calories = (speed + self.VALUE1) * 2 * self.weight
         return calories
 
 
@@ -131,14 +131,18 @@ PACKAGE_TYPE = {
 
 def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
-    training_class = PACKAGE_TYPE[workout_type]
-    return training_class(*data)
+    if workout_type in PACKAGE_TYPE:
+        training_class = PACKAGE_TYPE[workout_type]
+        return training_class(*data)
+    else:
+        return None
 
 
 def main(training: Training) -> None:
     """Главная функция."""
-    info = training.show_training_info()
-    print(info.get_message())
+    if training is not None:
+        info = training.show_training_info()
+        print(info.get_message())
 
 
 if __name__ == '__main__':
